@@ -13,6 +13,7 @@ exports.initialize = function (connection) {
       // Create new counter schema.
       counterSchema = new mongoose.Schema({
         model: { type: String, require: true },
+        prefixfield:{ type: String, require: false },
         field: { type: String, require: true },
         count: { type: Number, default: 0 }
       });
@@ -62,15 +63,26 @@ exports.plugin = function (schema, options) {
     unique: true,
     require: true
   };
+  
+  if(settings.prefixfield) {
+    fields[settings.prefixfield] = {
+      type: String,
+      require: false
+    };
+  }
   schema.add(fields);
-
+  
   // Find the counter for this model and the relevant field.
+  var cQuery = { model: settings.model, field: settings.field };
+  if(settings.prefixfield) extend(cQuery, { prefixfield: settings.prefixfield } );
   IdentityCounter.findOne(
-    { model: settings.model, field: settings.field },
+    cQuery,
     function (err, counter) {
       if (!counter) {
         // If no counter exists then create one and save it.
-        counter = new IdentityCounter({ model: settings.model, field: settings.field, count: settings.startAt - settings.incrementBy });
+        var newData = { model: settings.model, field: settings.field, count: settings.startAt - settings.incrementBy };
+        if(settings.prefixfield) extend(newData, { prefixfield: settings.prefixfield } );
+        counter = new IdentityCounter(newData);
         counter.save(function () {
           ready = true;
         });
@@ -79,7 +91,7 @@ exports.plugin = function (schema, options) {
         ready = true;
       }
     }
-  );
+  ); // KOM HITTTTTTT 
 
   // Declare a function to get the next counter for the model/schema.
   var nextCount = function (callback) {
