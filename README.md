@@ -10,6 +10,8 @@
 
 > This is the module used by [mongoose-simpledb](https://github.com/codetunnel/mongoose-simpledb) to increment Number IDs. You are perfectly able to use this module by itself if you would like. However, if you're looking to make your life easier when using [mongoose](http://mongoosejs.com/) then I highly recommend you check out simpledb. It's a small wrapper around mongoose but it makes it extremely easy to deal with your models and draws a clear path for how to use mongoose in your application.
 
+This fork has an ambition to add a prefix to the incremented value, and maintain a counter for each predefined prefix.
+
 ## Getting Started
 
 > npm install mongoose-auto-increment
